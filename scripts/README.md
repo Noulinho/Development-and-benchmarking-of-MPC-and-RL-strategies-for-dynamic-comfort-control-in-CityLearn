@@ -20,6 +20,7 @@ setting. The final sweep wrapper supplies the publication objective flags.
 | `run_ce1_occupant_p2s2_all_occ.py` | Final publication sweep: no occupant and four occupant types, February/March. Includes SAC initial and continuation stages. |
 | `run_ce1_occupant_p2s2_all_occ_sac_parallel.py` | Bounded per-building SAC execution using the final wrapper's command builders. |
 | `build_results_notebooks.py` | Build the three reading notebooks from published CSV/PNG exports; no simulation. |
+| `verify_results.py` | Verify artifact hashes, schemas, experiment coverage, and published table calculations; read-only, no simulation. |
 
 There is no stage 02: numbering follows the original workflow.
 

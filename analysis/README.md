@@ -22,7 +22,13 @@ not rerun controllers or change scientific results.
 Rebuild the reading notebooks with:
 
 ```bash
+python scripts/verify_results.py
 python scripts/build_results_notebooks.py --execute
 ```
+
+The verifier checks all published hashes and reconstructs the six thesis table
+CSVs from the building-level export. Add `--output-dir /tmp/ce1-notebooks` to
+the builder to keep the committed notebooks untouched. Both commands use the
+locked `requirements-analysis.txt` environment and run in GitHub Actions.
 
 See [reproduction and provenance](../docs/reproduction.md) for simulation stages.

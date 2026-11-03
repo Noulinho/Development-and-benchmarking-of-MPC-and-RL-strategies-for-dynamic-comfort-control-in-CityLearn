@@ -8,6 +8,8 @@ GNU-RL under limited commissioning data and simulated occupant feedback.
 and saved figures. They can be viewed directly on GitHub, and their cells run
 from the included exports without training a controller.
 
+[![Published results](https://github.com/Noulinho/annex96_common_exercise_1/actions/workflows/published-results.yml/badge.svg)](https://github.com/Noulinho/annex96_common_exercise_1/actions/workflows/published-results.yml)
+
 | Notebook | What you will find |
 |---|---|
 | [Controller comparison](analysis/01_no_occupant_results.ipynb) | Tables VII–VIII: February/March portfolio KPIs, representative buildings, and model-adaptation diagnostics. |
@@ -40,7 +42,51 @@ The thesis reports approximately 78% override reduction for MPC and 72% for
 GNU-RL. The [occupant notebook](analysis/02_occupant_results.ipynb) includes the
 paired building-level counts and explains the auxiliary comfort indicators.
 
-## Read or reproduce
+## Technical contributions
+
+The thesis work builds on the bundled CityLearn framework and differentiable
+MPC/GNU-RL code. The project-specific models, controller integration, occupant
+logic, and benchmark analysis are organized below; the bundled frameworks
+retain their upstream attribution.
+
+| Project work | Code |
+|---|---|
+| Thermal model identification and validation | [`src/models/`](src/models/) |
+| MPC integration and state estimation | [`src/controllers/mpc.py`](src/controllers/mpc.py), [`scripts/03_run_mpc.py`](scripts/03_run_mpc.py) |
+| SAC training and continuation pipeline | [`src/sac_merlin_pipeline.py`](src/sac_merlin_pipeline.py) |
+| GNU-RL integration and adaptation | [`src/rlmpc_pipeline.py`](src/rlmpc_pipeline.py) |
+| Synthetic occupant feedback and comfort references | [`src/occupants/`](src/occupants/) |
+| Reward formulation and benchmark evaluation | [`src/rewards.py`](src/rewards.py), [`analysis/`](analysis/) |
+
+## Reproducibility
+
+| Capability | Status |
+|---|---|
+| Verify published CSV/PNG integrity | SHA-256 manifest checked automatically |
+| Recompute Tables VII–IX from saved building exports | Six tables checked against the published CSVs |
+| Rebuild the three reading notebooks | Executed with a locked analysis environment |
+| Inspect controller source and experiment configurations | Included in this repository |
+| Reproduce full training from a fresh environment | Not independently validated; generated training artifacts remain local |
+
+The analysis workflow is tested on Linux with Python 3.11.14. It runs without
+the simulation dependencies. From the repository root:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-analysis.txt
+python scripts/verify_results.py
+python -m unittest discover -s tests -p test_published_results.py -v
+python scripts/build_results_notebooks.py --execute
+```
+
+Verification checks all 37 published artifacts, expected experiment identifiers,
+25-building coverage, numerical validity, summary calculations, and paired
+override comparisons. GitHub Actions runs these checks and executes the three
+reading notebooks on pushes and pull requests. Figures are preserved PNG exports;
+the notebooks embed them without regenerating simulation trajectories.
+
+## Read the notebooks
 
 To open and rerun the three final-results notebooks:
 
@@ -49,10 +95,10 @@ python -m pip install -r requirements-analysis.txt
 jupyter lab analysis/01_no_occupant_results.ipynb
 ```
 
-To rebuild all three notebooks and refresh their saved outputs:
+To rebuild all three notebooks into a separate directory:
 
 ```bash
-python scripts/build_results_notebooks.py --execute
+python scripts/build_results_notebooks.py --execute --output-dir /tmp/ce1-notebooks
 ```
 
 Full controller training requires the local CityLearn implementation, simulation

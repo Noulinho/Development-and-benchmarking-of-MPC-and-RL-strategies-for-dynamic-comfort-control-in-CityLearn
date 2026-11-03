@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import nbformat as nbf
+from verify_results import verify_results
 
 ROOT = Path(__file__).resolve().parents[1]
 SETUP = '''from pathlib import Path
@@ -35,7 +36,10 @@ def figure(folder, filename, caption):
     return [markdown('## ' + caption), nbf.v4.new_code_cell(f"display(Image(filename=str(FIGURES / '{folder}/{filename}'))) ")]
 
 
-def build(execute=False):
+def build(execute=False, output_dir=None):
+    verify_results(ROOT)
+    output_dir = Path(output_dir) if output_dir is not None else ROOT / 'analysis'
+    output_dir.mkdir(parents=True, exist_ok=True)
     prefix = 'ce1_thesis_final_results'
     final = 'ce1_thesis_final_results'
     clean = 'ce1_thesis_clean_load_figures'
@@ -78,12 +82,14 @@ display(summary)
         if execute:
             from nbclient import NotebookClient
             NotebookClient(notebook, timeout=120, resources={'metadata': {'path':str(ROOT)}}).execute()
-        path = ROOT / 'analysis' / filename
+        path = output_dir / filename
         nbf.write(notebook, path)
-        print(path.relative_to(ROOT))
+        print(path)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--execute', action='store_true', help='Refresh saved outputs using only committed artifacts.')
-    build(parser.parse_args().execute)
+    parser.add_argument('--output-dir', type=Path, help='Write rebuilt notebooks here instead of replacing the reading notebooks.')
+    args = parser.parse_args()
+    build(args.execute, args.output_dir)

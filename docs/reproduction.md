@@ -7,9 +7,46 @@ and PNG exports. They need no `results/` directory, trained weights, replay
 buffers, simulator, or thesis LaTeX checkout.
 
 ```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
 python -m pip install -r requirements-analysis.txt
+python scripts/verify_results.py
+python -m unittest discover -s tests -p test_published_results.py -v
 python scripts/build_results_notebooks.py --execute
 ```
+
+`requirements-analysis.txt` pins direct and transitive dependencies. This
+analysis environment was installed and tested separately from the simulator on
+Linux with CPython 3.11.14. The same Python version and commands are used in
+the [published-results workflow](../.github/workflows/published-results.yml).
+Other Python versions and operating systems have not been validated.
+
+`verify_results.py` is read-only. It checks the SHA-256 of all 37 manifest
+artifacts, schemas and numeric values in all 11 CSVs, expected run names and
+coverage of all 2,300 building records. It independently groups the building
+export to reproduce the six published Tables VII–IX CSVs, converts comfort
+proportions to percentages, and compares every cell with relative and absolute
+tolerances of `1e-10`. It also checks the Table VII discomfort values printed
+in the README at two decimal places and recomputes all 1,000 paired comparisons.
+Known empty auxiliary fields (carbon/pricing, baseline rollout fields, and
+dynamic-reference fields outside their applicable mode) are allowed explicitly;
+published table metrics must be finite and present.
+
+The district and adaptation exports receive integrity, schema, numeric, and
+experiment-coverage checks. The supplementary cost audit receives those checks
+and a check of its Grid formula. These auxiliary summaries are not recomputed
+from raw trajectories by this workflow.
+
+To check notebook execution without replacing the committed notebooks:
+
+```bash
+python scripts/build_results_notebooks.py --execute --output-dir /tmp/ce1-notebooks
+```
+
+The builder verifies artifacts and tables before writing notebooks. CI uses a
+temporary directory and uploads the three executed notebooks as a workflow
+artifact. The failure tests deliberately corrupt checksums, values, identifiers,
+and building coverage to verify that invalid results cause a failing check.
 
 This refreshes tables and embeds the existing figures in notebook outputs. It
 does not regenerate the figures from raw trajectories or rerun the experiments.
@@ -23,8 +60,8 @@ python -m pip install scipy matplotlib nbformat tabulate cvxpy
 The original requirements include upstream simulation tools and are not a
 locked environment specification. Use the repository's local `citylearn` and
 `diff_mpc` modules; do not replace them with independently installed versions.
-No fresh-environment, bit-for-bit training reproduction is claimed by this
-presentation cleanup.
+The validated analysis environment does not establish bit-for-bit controller
+training reproduction.
 
 ## Final experiment identity
 
