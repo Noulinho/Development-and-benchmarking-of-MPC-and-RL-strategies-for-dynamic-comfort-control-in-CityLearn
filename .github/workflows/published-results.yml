@@ -16,6 +16,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /requirements-analysis.txt
+            /analysis/artifact_manifest.json
+            /analysis/data/
+            /analysis/figures/ce1_thesis_final_results/
+            /analysis/figures/ce1_thesis_clean_load_figures/
+            /scripts/verify_results.py
+            /scripts/build_results_notebooks.py
+            /tests/test_published_results.py
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11.14'
