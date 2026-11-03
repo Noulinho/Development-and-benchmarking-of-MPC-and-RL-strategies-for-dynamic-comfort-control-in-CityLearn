@@ -1,4 +1,4 @@
-# Occupant-Centric Heat-Pump Control
+# Development and benchmarking of MPC and RL strategies for dynamic comfort control in CityLearn
 
 Thesis benchmark for IEA EBC Annex 96 Common Exercise 1: heat-pump control in
 25 Vermont homes using CityLearn. The study compares Safe-PI, SAC, MPC, and
